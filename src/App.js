@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import PrimarySearchAppBar from "./Components/AppBar";
+import PersistentDrawerLeft from "./Components/SideBar";
+import OrderPage from "./Components/OrderPage"; // Make sure to provide the correct path
 
-function App() {
+export default function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+
+  const handleMenuIconClick = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <PrimarySearchAppBar onMenuIconClick={handleMenuIconClick} />
+      <PersistentDrawerLeft open={isSidebarOpen} />
+      {/* Your other components */}
+      <OrderPage />
     </div>
   );
 }
-
-export default App;
