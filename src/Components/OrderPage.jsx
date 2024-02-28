@@ -17,6 +17,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import PrintIcon from "@mui/icons-material/Print";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
 
 const createData = (
   id,
@@ -26,7 +29,8 @@ const createData = (
   city,
   customerName,
   orderValue,
-  status
+  status,
+  operation
 ) => {
   return {
     id,
@@ -38,6 +42,7 @@ const createData = (
     customerName,
     orderValue,
     status,
+    operation,
   };
 };
 
@@ -50,7 +55,8 @@ const rows = [
     "City A",
     "John Doe",
     100,
-    "Pending"
+    "Pending",
+    "None"
   ),
   createData(
     2,
@@ -60,7 +66,8 @@ const rows = [
     "City B",
     "Jane Doe",
     150,
-    "Accepted"
+    "Accepted",
+    "None"
   ),
   // Add more rows as needed
 ];
@@ -74,6 +81,7 @@ const columns = [
   { id: "customerName", label: "Customer Name", minWidth: 120 },
   { id: "orderValue", label: "Order Value", minWidth: 80 },
   { id: "status", label: "Status", minWidth: 80 },
+  { id: "operation", label: "Operation", minWidth: 80 },
 ];
 
 const itemsPerPage = 5; // Set the number of items per page
@@ -87,13 +95,17 @@ const OrderPage = () => {
   };
 
   const handleCheckboxChange = (id) => {
-    // Toggle the checkbox for the corresponding row
     const updatedRows = rows.map((row) =>
       row.id === id ? { ...row, checkbox: !row.checkbox } : row
     );
-    // Update the rows in the state
-    // You might want to use state management like useState for rows
-    // and update it using setRows(updatedRows)
+    // You can use 'updatedRows' as needed
+  };
+
+  const handleOperationChange = (id, operation) => {
+    const updatedRows = rows.map((row) =>
+      row.id === id ? { ...row, operation } : row
+    );
+    // You can use 'updatedRows' as needed
   };
 
   const totalPages = Math.ceil(rows.length / itemsPerPage);
@@ -110,7 +122,7 @@ const OrderPage = () => {
   );
 
   return (
-    <Box sx={{ maxWidth: 900, margin: "auto" }}>
+    <Box sx={{ maxWidth: "90%", margin: "auto" }}>
       <Paper elevation={3} sx={{ marginBottom: 2 }}>
         <Tabs value={value} onChange={handleChange} centered>
           <Tab label="Pending" />
@@ -132,38 +144,25 @@ const OrderPage = () => {
         <div>
           <Button
             variant="outlined"
-            style={{ color: "black", borderColor: "gray", fontSize: "0.7rem" }}
+            size="small"
+            style={{
+              color: "black",
+              borderColor: "black",
+              fontSize: "0.7rem",
+            }}
             startIcon={<AssignmentIcon />}
           >
             Import Orders
           </Button>
-          <Button
-            variant="outlined"
-            style={{ color: "black", borderColor: "gray", fontSize: "0.7rem" }}
-            startIcon={<CheckIcon />}
-          >
+          <Button variant="outlined" size="small" disabled startIcon={<CheckIcon />}>
             Accept
           </Button>
-          <Button
-            variant="outlined"
-            style={{ color: "black", borderColor: "gray", fontSize: "0.7rem" }}
-            startIcon={<PrintIcon />}
-          >
+          <Button variant="outlined" size="small" disabled startIcon={<PrintIcon />}>
             Print
           </Button>
         </div>
       </Box>
-      <TableContainer
-        component={Paper}
-        sx={{
-          maxHeight: 400,
-          marginBottom: 2,
-          overflowX: "auto",
-          "@media (max-width: 600px)": {
-            width: "100%",
-          },
-        }}
-      >
+      <TableContainer component={Paper} sx={{ maxHeight: 400, marginBottom: 2, overflowX: "auto" }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -203,7 +202,20 @@ const OrderPage = () => {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {row[column.id]}
+                    {column.id === "operation" ? (
+                       <FormControl size="small" style={{ minWidth: "50px" }}>
+                        <Select
+                          value={row.operation}
+                          onChange={(e) => handleOperationChange(row.id, e.target.value)}
+                        >
+                          <MenuItem value="None">Action</MenuItem>
+                          <MenuItem value="Edit">Edit</MenuItem>
+                          <MenuItem value="Delete">Delete</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      row[column.id]
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
@@ -211,21 +223,10 @@ const OrderPage = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: 2,
-        }}
-      >
-        <div>
-          Page {currentPage} of {totalPages}
-        </div>
+      <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+        <div>Page {currentPage} of {totalPages}</div>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
+          <IconButton onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
             <ChevronLeftIcon />
           </IconButton>
           <div style={{ margin: "0 10px" }}>{currentPage}</div>
